@@ -1,0 +1,19 @@
+
+{
+  "employeeId": 3,
+  "workDate": "2026-01-29",
+  "time": "09:10"
+}
+
+
+{
+  "employeeId": 3,
+  "workDate": "2026-01-29",
+  "time": "18:20"
+}
+
+{
+  "name": "Eddie Hise",
+  "email": "eddie@test.com",
+  "department": "HR"
+}

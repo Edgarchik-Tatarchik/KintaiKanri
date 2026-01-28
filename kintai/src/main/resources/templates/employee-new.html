@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>New Employee</title>
+  <style>
+    label { display:block; margin-top:10px; }
+    input { width:300px; padding:6px; }
+    .error { color:red; }
+  </style>
+</head>
+<body>
+
+<h1>社員作成</h1>
+
+<form th:action="@{/ui/employees}" th:object="${employee}" method="post">
+
+  <label>Name</label>
+  <input type="text" th:field="*{name}" />
+  <div class="error" th:errors="*{name}"></div>
+
+  <label>Email</label>
+  <input type="text" th:field="*{email}" />
+  <div class="error" th:errors="*{email}"></div>
+
+  <label>Department</label>
+  <input type="text" th:field="*{department}" />
+  <div class="error" th:errors="*{department}"></div>
+
+  <button type="submit">作成</button>
+</form>
+
+<p><a th:href="@{/ui/employees}">← 一覧へ戻る</a></p>
+
+</body>
+</html>

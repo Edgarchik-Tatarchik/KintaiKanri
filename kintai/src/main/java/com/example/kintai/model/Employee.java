@@ -79,6 +79,13 @@ public class Employee {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+    public static Employee create(String name, String email, String department) {
+    Employee e = new Employee();
+    e.name = name;
+    e.email = email;
+    e.department = department;
+    return e;
+}
     
 }
 

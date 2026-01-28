@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Employees</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background: #f2f2f2; }
+  </style>
+</head>
+<body>
+    <p>
+  <a th:href="@{/ui/employees/new}">＋ 新規作成</a>
+</p>
+<div th:if="${errorMessage}" style="color:red; margin-bottom:10px;"
+     th:text="${errorMessage}">
+</div>
+<h1>社員一覧</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Department</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="e : ${employees}">
+      <td th:text="${e.id}"></td>
+      <td><a th:href="@{'/ui/employees/' + ${e.id}}" th:text="${e.name}"></a></td>
+      <td th:text="${e.email}"></td>
+      <td th:text="${e.department}"></td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Details</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+
+<h1>社員情報</h1>
+
+<p><strong>ID:</strong> <span th:text="${employee.id}"></span></p>
+<p><strong>Name:</strong> <span th:text="${employee.name}"></span></p>
+<p><strong>Email:</strong> <span th:text="${employee.email}"></span></p>
+<p><strong>Department:</strong> <span th:text="${employee.department}"></span></p>
+
+
+<hr>
+<h2>勤怠登録</h2>
+
+<form th:action="@{/ui/attendance/check-in}" method="post" style="margin-bottom:12px;">
+  <input type="hidden" name="employeeId" th:value="${employee.id}" />
+
+  <label>日付: </label>
+  <input type="date" name="workDate" required />
+
+  <label>出勤: </label>
+  <input type="time" name="time" required />
+
+  <button type="submit">出勤</button>
+</form>
+
+<form th:action="@{/ui/attendance/check-out}" method="post" style="margin-bottom:12px;">
+  <input type="hidden" name="employeeId" th:value="${employee.id}" />
+
+  <label>日付: </label>
+  <input type="date" name="workDate" required />
+
+  <label>退勤: </label>
+  <input type="time" name="time" required />
+
+  <button type="submit">退勤</button>
+</form>
+<form th:action="@{/ui/attendance/break}" method="post">
+  <input type="hidden" name="employeeId" th:value="${employee.id}" />
+
+  <label>日付: </label>
+  <input type="date" name="workDate" th:value="${today}" required />
+
+  <label>休憩(分): </label>
+  <input type="number" name="breakMinutes" min="0" value="60" required />
+
+  <button type="submit">休憩更新</button>
+</form>
+
+<h2>勤怠一覧</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th>出勤</th>
+            <th>退勤</th>
+            <th>休憩(分)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="a : ${attendances}">
+            <td th:text="${a.workDate}"></td>
+            <td th:text="${a.checkIn}"></td>
+            <td th:text="${a.checkOut}"></td>
+            <td th:text="${a.breakMinutes}"></td>
+        </tr>
+    </tbody>
+</table>
+<p style="margin-bottom: 16px;">
+  <a th:href="@{/ui/employees}"
+     style="display:inline-block; padding:8px 12px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
+    ← 社員一覧へ戻る
+  </a>
+</p>
+</body>
+<style>
+  .msg { padding: 10px; margin: 10px 0; border-radius: 6px; }
+  .success { background: #e7f7ea; border: 1px solid #b7e3c0; }
+  .error { background: #fde8e8; border: 1px solid #f5b5b5; }
+</style>
+
+<div th:if="${successMessage}" class="msg success" th:text="${successMessage}"></div>
+<div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}"></div>
+</html>
