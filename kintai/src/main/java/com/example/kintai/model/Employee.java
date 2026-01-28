@@ -8,6 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "employees")
@@ -15,20 +18,23 @@ public class Employee {
     protected Employee() {
     
     }
-    public Employee(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+    
      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Name is required")
+    @Size(max = 50, message = "Name must be <= 50 characters")
     @Column(nullable = false)
     private String name;
 
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    @Size(max = 100, message = "Email must be <= 100 characters")
     @Column(nullable = false, unique = true)
-    private String email;
+    private String email;   
 
+    @Size(max = 50, message = "Department must be <= 50 characters")
     private String department;
 
     private LocalDateTime createdAt;
@@ -45,7 +51,7 @@ public class Employee {
     public String getName() {
         return name;
     }
-
+    
     public void setName(String name) {
         this.name = name;
     }
@@ -73,6 +79,8 @@ public class Employee {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+    
 }
+
 
 

@@ -2,6 +2,7 @@ package com.example.kintai.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +33,7 @@ public class EmployeeController {
         return employeeService.findAll();
     }
     @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee) {
+    public Employee createEmployee(@Valid @RequestBody Employee employee) {
         return employeeService.save(employee);
 }
     @GetMapping("/{id}")
@@ -45,7 +46,7 @@ public class EmployeeController {
     @PutMapping("/{id}")
 public Employee updateEmployee(
         @PathVariable Long id,
-        @RequestBody Employee updatedEmployee) {
+        @Valid @RequestBody Employee updatedEmployee) {
 
     Employee employee = employeeService.findById(id)
         .orElseThrow(() -> new ResponseStatusException(
