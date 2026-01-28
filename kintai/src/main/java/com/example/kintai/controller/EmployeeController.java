@@ -3,6 +3,8 @@ package com.example.kintai.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,5 +57,15 @@ public Employee updateEmployee(
     employee.setDepartment(updatedEmployee.getDepartment());
 
     return employeeService.save(employee);
+}
+    @DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+
+    if (employeeService.findById(id).isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found");
+    }
+
+    employeeService.deleteById(id);
+    return ResponseEntity.noContent().build(); // 204
 }
 }
