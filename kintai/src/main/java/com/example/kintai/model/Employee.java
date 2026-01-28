@@ -12,6 +12,13 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "employees")
 public class Employee {
+    protected Employee() {
+    
+    }
+    public Employee(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
