@@ -79,7 +79,14 @@
      style="padding:6px 10px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
     次月 ▶
   </a>
+  <a th:href="@{'/ui/employees/' + ${employee.id} + '/csv?month=' + ${selectedMonth}}"
+   style="padding:6px 10px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
+  CSVダウンロード
+</a>
 </div>
+
+
+
 <h2>勤怠一覧</h2>
 
 <table>
