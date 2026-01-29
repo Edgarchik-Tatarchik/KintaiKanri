@@ -49,36 +49,67 @@ public class EmployeeUiController {
     
     @GetMapping
     public String list(@RequestParam(required = false) String keyword,
+                   @RequestParam(required = false) String department,
+                   @RequestParam(required = false) String status,
                    Model model) {
 
-        var employees = (keyword == null || keyword.isBlank())
+    var employees = (keyword == null || keyword.isBlank())
             ? employeeService.findAll()
             : employeeService.searchByName(keyword);
 
-        model.addAttribute("employees", employees);
-        model.addAttribute("keyword", keyword);
-
-    
-        var today = java.time.LocalDate.now();
-        Map<Long, String> statusLabelMap = new HashMap<>();
-        Map<Long, String> statusClassMap = new HashMap<>();
-
-        for (Employee e : employees) {
-            attendanceService.findTodayByEmployee(e.getId(), today)
-                .ifPresentOrElse(a -> {
-                    statusLabelMap.put(e.getId(), a.getStatusLabel());
-                    statusClassMap.put(e.getId(), a.getStatusClass());
-                }, () -> {
-                    statusLabelMap.put(e.getId(), "未出勤");
-                    statusClassMap.put(e.getId(), "status-work");
-                });
-        }
-
-        model.addAttribute("todayStatusLabel", statusLabelMap);
-        model.addAttribute("todayStatusClass", statusClassMap);
-
-        return "employees-list";
+    if (department != null && !department.isBlank()) {
+        employees = employees.stream()
+                .filter(e -> department.equals(e.getDepartment()))
+                .toList();
     }
+
+    var today = java.time.LocalDate.now();
+    Map<Long, String> statusLabelMap = new HashMap<>();
+    Map<Long, String> statusClassMap = new HashMap<>();
+
+    for (Employee e : employees) {
+        attendanceService.findTodayByEmployee(e.getId(), today)
+            .ifPresentOrElse(a -> {
+                statusLabelMap.put(e.getId(), a.getStatusLabel());
+                statusClassMap.put(e.getId(), a.getStatusClass());
+            }, () -> {
+                statusLabelMap.put(e.getId(), "未出勤");
+                statusClassMap.put(e.getId(), "status-work");
+            });
+    }
+
+    if (status != null && !status.isBlank()) {
+        employees = employees.stream()
+                .filter(e -> {
+                    String s = statusLabelMap.get(e.getId());
+                    return switch (status) {
+                        case "IN" -> "出勤中".equals(s);
+                        case "OUT" -> "退勤済".equals(s);
+                        case "NONE" -> "未出勤".equals(s);
+                        default -> true;
+                    };
+                })
+                .toList();
+    }
+
+    model.addAttribute("employees", employees);
+    model.addAttribute("keyword", keyword);
+    model.addAttribute("department", department);
+    model.addAttribute("status", status);
+    model.addAttribute("todayStatusLabel", statusLabelMap);
+    model.addAttribute("todayStatusClass", statusClassMap);
+
+    model.addAttribute("departments",
+        employeeService.findAll().stream()
+            .map(Employee::getDepartment)
+            .filter(d -> d != null && !d.isBlank())
+            .distinct()
+            .sorted()
+            .toList()
+    );
+
+    return "employees-list";
+}
 
     
     @GetMapping("/{id:\\d+}")

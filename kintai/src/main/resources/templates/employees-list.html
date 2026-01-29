@@ -34,6 +34,31 @@
      th:href="@{/ui/employees}"
      style="align-self:center;">クリア</a>
 </form>
+<form method="get" th:action="@{/ui/employees}"
+      style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+      
+  <select name="department">
+    <option value="">全ての部署</option>
+    <option th:each="d : ${departments}"
+            th:value="${d}"
+            th:text="${d}"
+            th:selected="${d == department}">
+    </option>
+  </select>
+
+
+  <select name="status">
+    <option value="">全ての状態</option>
+    <option value="IN" th:selected="${status == 'IN'}">出勤中</option>
+    <option value="OUT" th:selected="${status == 'OUT'}">退勤済</option>
+    <option value="NONE" th:selected="${status == 'NONE'}">未出勤</option>
+  </select>
+
+  <button type="submit">絞り込み</button>
+
+  <a th:href="@{/ui/employees}">クリア</a>
+</form>
+
 
 </p>
 <div th:if="${errorMessage}" style="color:red; margin-bottom:10px;"
