@@ -1,4 +1,4 @@
-package com.example.kintai.controller;
+package com.example.kintai.controller.api;
 
 import java.util.List;
 

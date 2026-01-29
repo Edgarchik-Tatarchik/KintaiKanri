@@ -1,4 +1,4 @@
-package com.example.kintai.controller;
+package com.example.kintai.controller.ui;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;

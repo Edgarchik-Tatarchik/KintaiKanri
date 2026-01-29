@@ -1,8 +1,10 @@
-package com.example.kintai.controller;
-
+package com.example.kintai.controller.api;
+/**
+ * REST API controller for integration / frontend usage.
+ * UI pages are handled by EmployeeUiController.
+ */
 import java.util.List;
 
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.kintai.model.Employee;
 import com.example.kintai.service.EmployeeService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/employees")

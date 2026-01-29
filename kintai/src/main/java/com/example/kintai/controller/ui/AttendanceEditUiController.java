@@ -1,4 +1,4 @@
-package com.example.kintai.controller;
+package com.example.kintai.controller.ui;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
