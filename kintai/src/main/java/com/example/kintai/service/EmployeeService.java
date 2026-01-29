@@ -8,11 +8,10 @@ import com.example.kintai.model.Employee;
 public interface EmployeeService {
 
     List<Employee> findAll();
-
+    List<Employee> searchByName(String keyword);
     Optional<Employee> findById(Long id);
-
     Employee save(Employee employee);
-
     void deleteById(Long id);
+    boolean existsByEmail(String email);
 }
 

@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,7 @@ import com.example.kintai.model.Employee;
 import com.example.kintai.service.AttendanceService;
 import com.example.kintai.service.EmployeeService;
 
+import jakarta.persistence.PersistenceException;
 import jakarta.validation.Valid;
 
 @Controller
@@ -45,27 +48,35 @@ public class EmployeeUiController {
 
     
     @GetMapping
-    public String list(Model model) {
-        var employees = employeeService.findAll();
-        var today = java.time.LocalDate.now();
+    public String list(@RequestParam(required = false) String keyword,
+                   Model model) {
 
-            Map<Long, String> statusLabelMap = new HashMap<>();
-            Map<Long, String> statusClassMap = new HashMap<>();
-
-    for (Employee e : employees) {
-        attendanceService.findTodayByEmployee(e.getId(), today)
-            .ifPresentOrElse(a -> {
-                statusLabelMap.put(e.getId(), a.getStatusLabel());
-                statusClassMap.put(e.getId(), a.getStatusClass());
-            }, () -> {
-                statusLabelMap.put(e.getId(), "未出勤");
-                statusClassMap.put(e.getId(), "status-work");
-            });
-    }
+        var employees = (keyword == null || keyword.isBlank())
+            ? employeeService.findAll()
+            : employeeService.searchByName(keyword);
 
         model.addAttribute("employees", employees);
+        model.addAttribute("keyword", keyword);
+
+    
+        var today = java.time.LocalDate.now();
+        Map<Long, String> statusLabelMap = new HashMap<>();
+        Map<Long, String> statusClassMap = new HashMap<>();
+
+        for (Employee e : employees) {
+            attendanceService.findTodayByEmployee(e.getId(), today)
+                .ifPresentOrElse(a -> {
+                    statusLabelMap.put(e.getId(), a.getStatusLabel());
+                    statusClassMap.put(e.getId(), a.getStatusClass());
+                }, () -> {
+                    statusLabelMap.put(e.getId(), "未出勤");
+                    statusClassMap.put(e.getId(), "status-work");
+                });
+        }
+
         model.addAttribute("todayStatusLabel", statusLabelMap);
         model.addAttribute("todayStatusClass", statusClassMap);
+
         return "employees-list";
     }
 
@@ -130,7 +141,7 @@ public class EmployeeUiController {
 
         YearMonth ym;
         try {
-            ym = YearMonth.parse(month); // "YYYY-MM"
+            ym = YearMonth.parse(month); 
         } catch (DateTimeParseException ex) {
             ym = YearMonth.now();
         }
@@ -174,20 +185,33 @@ public class EmployeeUiController {
     public String createEmployee(@Valid @ModelAttribute("employee") EmployeeForm form,
                              BindingResult bindingResult,
                              RedirectAttributes ra) {
+    String email = form.getEmail() == null ? "" : form.getEmail().trim().toLowerCase();
+    form.setEmail(email);
 
     if (bindingResult.hasErrors()) {
         return "employee-new";
     }
 
     
-
-    Employee saved = employeeService.save(
-    Employee.create(form.getName(), form.getEmail(), form.getDepartment())
-    );
-
-    ra.addFlashAttribute("successMessage", "社員を作成しました");
-    return "redirect:/ui/employees/" + saved.getId();
+    if (employeeService.existsByEmail(form.getEmail())) {
+        bindingResult.rejectValue("email", "duplicate", "このメールアドレスは既に登録されています");
+        return "employee-new";
     }
+
+    try {
+        Employee saved = employeeService.save(
+                Employee.create(form.getName(), form.getEmail(), form.getDepartment())
+        );
+
+        ra.addFlashAttribute("successMessage", "社員を作成しました");
+        return "redirect:/ui/employees/" + saved.getId();
+
+    } catch (DataIntegrityViolationException | TransactionSystemException | PersistenceException ex) {
+        
+        bindingResult.rejectValue("email", "duplicate", "このメールアドレスは既に登録されています");
+        return "employee-new";
+    }
+}
     private String escapeCsv(String s) {
     if (s == null) return "";
     boolean needQuote = s.contains(",") || s.contains("\n") || s.contains("\r") || s.contains("\"");

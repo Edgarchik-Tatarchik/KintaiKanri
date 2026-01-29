@@ -10,22 +10,23 @@
   </style>
 </head>
 <body>
-
+<div th:if="${errorMessage}" style="color:red; margin-bottom:10px;"
+     th:text="${errorMessage}"></div>
 <h1>社員作成</h1>
 
 <form th:action="@{/ui/employees}" th:object="${employee}" method="post">
 
   <label>Name</label>
   <input type="text" th:field="*{name}" />
-  <div class="error" th:errors="*{name}"></div>
+  <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
 
   <label>Email</label>
   <input type="text" th:field="*{email}" />
-  <div class="error" th:errors="*{email}"></div>
+  <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red;"></div>
 
   <label>Department</label>
   <input type="text" th:field="*{department}" />
-  <div class="error" th:errors="*{department}"></div>
+  <div th:if="${#fields.hasErrors('department')}" th:errors="*{department}" style="color:red;"></div>
 
   <button type="submit">作成</button>
 </form>

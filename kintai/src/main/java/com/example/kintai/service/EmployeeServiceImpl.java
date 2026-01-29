@@ -36,5 +36,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void deleteById(Long id) {
         employeeRepository.deleteById(id);
     }
+    @Override
+    public List<Employee> searchByName(String keyword) {
+        return employeeRepository.findByNameContainingIgnoreCase(keyword);
+    }
+    @Override
+    public boolean existsByEmail(String email) {
+        return employeeRepository.existsByEmail(email);
+}
 }
     
