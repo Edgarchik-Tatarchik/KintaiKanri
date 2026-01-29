@@ -1,93 +1,87 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8" />
-  <title>Employees</title>
-  <style>
-    .status-work { color:#d32f2f; font-weight:bold; } /* 未出勤 */
-    .status-in   { color:#f9a825; font-weight:bold; } /* 出勤中 */
-    .status-out  { color:#388e3c; font-weight:bold; } /* 退勤済 */
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
-    th { background: #f2f2f2; }
-  </style>
-</head>
-<body>
-    
-    <p>
-  <a th:href="@{/ui/employees/new}" style="margin-right:16px;">＋ 新規作成</a>
+<div th:fragment="page">
 
-  <a th:href="@{/}">← ダッシュボード</a>
+  
+  <div class="card">
+    <div class="h1">社員一覧</div>
+    <div class="muted">社員の検索・絞り込みができます</div>
 
-  <form method="get" th:action="@{/ui/employees}"
-      style="margin-bottom:12px; display:flex; gap:8px;">
+    <div class="spacer"></div>
 
-  <input type="text"
-         name="keyword"
-         placeholder="社員名で検索"
-         th:value="${keyword}"
-         style="padding:6px; width:200px;" />
+  
+    <form method="get"
+          th:action="@{/ui/employees}"
+          class="row">
 
-  <button type="submit">検索</button>
-
-  <a th:if="${keyword != null}"
-     th:href="@{/ui/employees}"
-     style="align-self:center;">クリア</a>
-</form>
-<form method="get" th:action="@{/ui/employees}"
-      style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
       
-  <select name="department">
-    <option value="">全ての部署</option>
-    <option th:each="d : ${departments}"
-            th:value="${d}"
-            th:text="${d}"
-            th:selected="${d == department}">
-    </option>
-  </select>
+      <input class="input"
+             type="text"
+             name="keyword"
+             placeholder="社員名で検索"
+             th:value="${keyword}" />
 
+     
+      <select name="department">
+        <option value="">全ての部署</option>
+        <option th:each="d : ${departments}"
+                th:value="${d}"
+                th:text="${d}"
+                th:selected="${d == department}">
+        </option>
+      </select>
 
-  <select name="status">
-    <option value="">全ての状態</option>
-    <option value="IN" th:selected="${status == 'IN'}">出勤中</option>
-    <option value="OUT" th:selected="${status == 'OUT'}">退勤済</option>
-    <option value="NONE" th:selected="${status == 'NONE'}">未出勤</option>
-  </select>
+      
+      <select name="status">
+        <option value="">全ての状態</option>
+        <option value="IN" th:selected="${status == 'IN'}">出勤中</option>
+        <option value="OUT" th:selected="${status == 'OUT'}">退勤済</option>
+        <option value="NONE" th:selected="${status == 'NONE'}">未出勤</option>
+      </select>
 
-  <button type="submit">絞り込み</button>
+      <button class="btn btn-primary" type="submit">絞り込み</button>
+      <a class="btn" th:href="@{/ui/employees}">クリア</a>
+    </form>
+  </div>
 
-  <a th:href="@{/ui/employees}">クリア</a>
-</form>
+  
+  <div class="card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>名前</th>
+          <th>部署</th>
+          <th>今日の状態</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
 
+        <tr th:each="e : ${employees}">
+          <td th:text="${e.name}"></td>
+          <td th:text="${e.department}"></td>
 
-</p>
-<div th:if="${errorMessage}" style="color:red; margin-bottom:10px;"
-     th:text="${errorMessage}">
+       
+          <td>
+            <span class="badge"
+                  th:text="${todayStatusLabel[e.id]}"
+                  th:classappend="
+                    ${todayStatusClass[e.id] == 'status-work'} ? ' badge-work' :
+                    (${todayStatusClass[e.id] == 'status-in'} ? ' badge-in' : ' badge-out')
+                  ">
+            </span>
+          </td>
+
+          <td>
+            <a th:href="@{'/ui/employees/' + ${e.id}}">詳細</a>
+          </td>
+        </tr>
+
+        
+        <tr th:if="${#lists.isEmpty(employees)}">
+          <td colspan="4" class="muted">該当する社員がいません</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
 </div>
-<h1>社員一覧</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Department</th>
-      <th>今日の状態</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr th:each="e : ${employees}">
-      <td th:text="${e.id}"></td>
-      <td><a th:href="@{'/ui/employees/' + ${e.id}}" th:text="${e.name}"></a></td>
-      <td th:text="${e.email}"></td>
-      <td th:text="${e.department}"></td>
-      <td th:text="${todayStatusLabel[e.id]}"
-        th:class="${todayStatusClass[e.id]}">
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-</body>
-</html>

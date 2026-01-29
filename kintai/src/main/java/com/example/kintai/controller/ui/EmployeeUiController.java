@@ -108,7 +108,7 @@ public class EmployeeUiController {
             .toList()
     );
 
-    return "employees-list";
+    return "employees-list-layout";
 }
 
     
@@ -145,7 +145,7 @@ public class EmployeeUiController {
             model.addAttribute("nextMonth", ym.plusMonths(1).toString());  
             model.addAttribute("totalWorkedTime", formatMinutes(totalMinutes));
 
-            return "employee-details";
+            return "employee-details-layout";
         })
         .orElseGet(() -> {
             ra.addFlashAttribute("errorMessage", "社員が存在しません");
@@ -161,7 +161,7 @@ public class EmployeeUiController {
     @GetMapping("/new")
     public String newEmployeeForm(Model model) {
         model.addAttribute("employee", new EmployeeForm());
-        return "employee-new";
+        return "employee-new-layout";
     }
     @GetMapping("/{id:\\d+}/csv")
     public ResponseEntity<byte[]> exportMonthlyCsv(@PathVariable Long id,
@@ -220,13 +220,13 @@ public class EmployeeUiController {
     form.setEmail(email);
 
     if (bindingResult.hasErrors()) {
-        return "employee-new";
+        return "employee-new-layout";
     }
 
     
     if (employeeService.existsByEmail(form.getEmail())) {
         bindingResult.rejectValue("email", "duplicate", "このメールアドレスは既に登録されています");
-        return "employee-new";
+        return "employee-new-layout";
     }
 
     try {
@@ -240,7 +240,7 @@ public class EmployeeUiController {
     } catch (DataIntegrityViolationException | TransactionSystemException | PersistenceException ex) {
         
         bindingResult.rejectValue("email", "duplicate", "このメールアドレスは既に登録されています");
-        return "employee-new";
+        return "employee-new-layout";
     }
 }
     private String escapeCsv(String s) {

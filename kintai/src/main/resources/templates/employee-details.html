@@ -1,142 +1,191 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Employee Details</title>
-    <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; }
-        th { background: #f2f2f2; }
-    </style>
-</head>
-<body>
+<div th:fragment="page">
 
+ 
+  <div class="card">
+    <div class="h1">社員情報</div>
+    <div class="muted">社員詳細と月次勤怠を確認できます</div>
 
-<h1>社員情報</h1>
+    <div class="spacer"></div>
 
-<p><strong>ID:</strong> <span th:text="${employee.id}"></span></p>
-<p><strong>Name:</strong> <span th:text="${employee.name}"></span></p>
-<p><strong>Email:</strong> <span th:text="${employee.email}"></span></p>
-<p><strong>Department:</strong> <span th:text="${employee.department}"></span></p>
-
-
-<hr>
-<h2>勤怠登録</h2>
-
-<form th:action="@{/ui/attendance/check-in}" method="post" style="margin-bottom:12px;">
-  <input type="hidden" name="employeeId" th:value="${employee.id}" />
-
-  <label>日付: </label>
-  <input type="date" name="workDate" required />
-
-  <label>出勤: </label>
-  <input type="time" name="time" required />
-  <input type="hidden" name="month" th:value="${selectedMonth}" />
-
-  <button type="submit">出勤</button>
-</form>
-
-<form th:action="@{/ui/attendance/check-out}" method="post" style="margin-bottom:12px;">
-  <input type="hidden" name="employeeId" th:value="${employee.id}" />
-
-  <label>日付: </label>
-  <input type="date" name="workDate" required />
-
-  <label>退勤: </label>
-  <input type="time" name="time" required />
-  <input type="hidden" name="month" th:value="${selectedMonth}" />
-
-  <button type="submit">退勤</button>
-</form>
-<form th:action="@{/ui/attendance/break}" method="post">
-  <input type="hidden" name="employeeId" th:value="${employee.id}" />
-
-  <label>日付: </label>
-  <input type="date" name="workDate" th:value="${today}" required />
-
-  <label>休憩(分): </label>
-  <input type="number" name="breakMinutes" min="0" value="60" required />
-  <input type="hidden" name="month" th:value="${selectedMonth}" />
-
-  <button type="submit">休憩更新</button>
-</form>
-
-<h2>月次勤怠</h2>
-<form th:action="@{'/ui/employees/' + ${employee.id}}" method="get" style="margin-bottom: 12px;">
-  <label>対象月: </label>
-  <input type="month" name="month" th:value="${selectedMonth}" required />
-  <button type="submit">表示</button>
-</form>
-<div style="margin-bottom:12px; display:flex; gap:8px; align-items:center;">
-  <a th:href="@{'/ui/employees/' + ${employee.id} + '?month=' + ${prevMonth}}"
-     style="padding:6px 10px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
-    ◀ 前月
-  </a>
-
-  <strong th:text="${selectedMonth}"></strong>
-
-  <a th:href="@{'/ui/employees/' + ${employee.id} + '?month=' + ${nextMonth}}"
-     style="padding:6px 10px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
-    次月 ▶
-  </a>
-  <a th:href="@{'/ui/employees/' + ${employee.id} + '/csv?month=' + ${selectedMonth}}"
-   style="padding:6px 10px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
-  CSVダウンロード
-</a>
-</div>
-
-
-
-<h2>勤怠一覧</h2>
-
-<table>
-    <thead>
+    <table class="table">
+      <tbody>
         <tr>
-            <th>日付</th>
-            <th>出勤</th>
-            <th>退勤</th>
-            <th>休憩(分)</th>
-            <th>労働時間</th>
-            <th>状態</th>
-            <th>操作</th>
+          <th style="width:180px;">ID</th>
+          <td th:text="${employee.id}"></td>
         </tr>
-    </thead>
-    <tbody>
-        <tr th:each="a : ${attendances}">
-            <td th:text="${a.workDate}"></td>
-            <td th:text="${a.checkIn}"></td>
-            <td th:text="${a.checkOut}"></td>
-            <td th:text="${a.breakMinutes}"></td>
-            <td th:text="${a.workedTime}"></td>
-            <td th:text="${a.statusLabel}" th:class="${a.statusClass}"></td>
-            <td>
-            <a th:href="@{'/ui/attendance/' + ${a.id} + '/edit' + '?month=' + ${selectedMonth}}">
-                編集
-            </a>
-            </td>
+        <tr>
+          <th>Name</th>
+          <td th:text="${employee.name}"></td>
         </tr>
-    </tbody>
-</table>
-<p>
-  <strong>月合計労働時間:</strong>
-  <span th:text="${totalWorkedTime}"></span>
-</p>
-<p style="margin-bottom: 16px;">
-  <a th:href="@{/ui/employees}"
-     style="display:inline-block; padding:8px 12px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
-    ← 社員一覧へ戻る
-  </a>
-</p>
-</body>
-<style>
-    .status-work { color: #d32f2f; font-weight: bold; } /* 未出勤 */
-    .status-in   { color: #f9a825; font-weight: bold; } /* 出勤中 */
-    .status-out  { color: #388e3c; font-weight: bold; } /* 退勤済 */
-  .msg { padding: 10px; margin: 10px 0; border-radius: 6px; }
-  .success { background: #e7f7ea; border: 1px solid #b7e3c0; }
-  .error { background: #fde8e8; border: 1px solid #f5b5b5; }
-</style>
+        <tr>
+          <th>Email</th>
+          <td th:text="${employee.email}"></td>
+        </tr>
+        <tr>
+          <th>Department</th>
+          <td th:text="${employee.department}"></td>
+        </tr>
+      </tbody>
+    </table>
 
-<div th:if="${successMessage}" class="msg success" th:text="${successMessage}"></div>
-<div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}"></div>
-</html>
+    <div class="spacer"></div>
+
+    <div class="row">
+      <a class="btn" th:href="@{/ui/employees}">← 社員一覧へ戻る</a>
+      <a class="btn btn-primary"
+         th:href="@{'/ui/employees/' + ${employee.id} + '/csv?month=' + ${selectedMonth}}">
+        CSVダウンロード
+      </a>
+    </div>
+  </div>
+
+  
+  <div class="card">
+    <div class="h2">月次勤怠</div>
+
+    <form class="row"
+          th:action="@{'/ui/employees/' + ${employee.id}}"
+          method="get">
+      <label>対象月</label>
+      <input class="input" type="month" name="month" th:value="${selectedMonth}" required />
+      <button class="btn btn-primary" type="submit">表示</button>
+
+      <a class="btn"
+         th:href="@{'/ui/employees/' + ${employee.id} + '?month=' + ${prevMonth}}">
+        ◀ 前月
+      </a>
+
+      <a class="btn"
+         th:href="@{'/ui/employees/' + ${employee.id} + '?month=' + ${nextMonth}}">
+        次月 ▶
+      </a>
+
+      <span class="muted">
+        表示中：<strong th:text="${selectedMonth}"></strong>
+      </span>
+    </form>
+
+    <div class="spacer"></div>
+
+    <div class="row">
+      <div class="card" style="flex:1; margin-top:0;">
+        <div class="muted">月合計労働時間</div>
+        <div class="h1" th:text="${totalWorkedTime}"></div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="card">
+    <div class="h2">勤怠登録</div>
+    <div class="muted">日付を選択して出勤・退勤・休憩を登録します</div>
+
+    <div class="spacer"></div>
+
+    <div class="row">
+
+      
+      <form class="row"
+            th:action="@{/ui/attendance/check-in}"
+            method="post">
+        <input type="hidden" name="employeeId" th:value="${employee.id}" />
+        <input type="hidden" name="month" th:value="${selectedMonth}" />
+
+        <label>日付</label>
+        <input class="input" type="date" name="workDate" th:value="${today}" required />
+
+        <label>出勤</label>
+        <input class="input" type="time" name="time" required />
+
+        <button class="btn btn-primary" type="submit">出勤</button>
+      </form>
+
+      
+      <form class="row"
+            th:action="@{/ui/attendance/check-out}"
+            method="post">
+        <input type="hidden" name="employeeId" th:value="${employee.id}" />
+        <input type="hidden" name="month" th:value="${selectedMonth}" />
+
+        <label>日付</label>
+        <input class="input" type="date" name="workDate" th:value="${today}" required />
+
+        <label>退勤</label>
+        <input class="input" type="time" name="time" required />
+
+        <button class="btn btn-primary" type="submit">退勤</button>
+      </form>
+
+     
+      <form class="row"
+            th:action="@{/ui/attendance/break}"
+            method="post">
+        <input type="hidden" name="employeeId" th:value="${employee.id}" />
+        <input type="hidden" name="month" th:value="${selectedMonth}" />
+
+        <label>日付</label>
+        <input class="input" type="date" name="workDate" th:value="${today}" required />
+
+        <label>休憩(分)</label>
+        <input class="input" type="number" name="breakMinutes" min="0" value="60" required />
+
+        <button class="btn" type="submit">休憩更新</button>
+      </form>
+
+    </div>
+  </div>
+
+ 
+  <div class="card">
+    <div class="h2">勤怠一覧</div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>出勤</th>
+          <th>退勤</th>
+          <th>休憩(分)</th>
+          <th>労働時間</th>
+          <th>状態</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="a : ${attendances}">
+          <td th:text="${a.workDate}"></td>
+          <td th:text="${a.checkIn}"></td>
+          <td th:text="${a.checkOut}"></td>
+          <td th:text="${a.breakMinutes}"></td>
+          <td th:text="${a.workedTime}"></td>
+
+          
+          <td>
+            <span class="badge"
+                  th:text="${a.statusLabel}"
+                  th:classappend="
+                    ${a.statusClass == 'status-work'} ? ' badge-work' :
+                    (${a.statusClass == 'status-in'} ? ' badge-in' : ' badge-out')
+                  ">
+            </span>
+          </td>
+
+          <td>
+            <a th:href="@{'/ui/attendance/' + ${a.id} + '/edit' + '?month=' + ${selectedMonth}}">
+              編集
+            </a>
+          </td>
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(attendances)}">
+          <td colspan="7" class="muted">この月の勤怠データはありません</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="spacer"></div>
+
+    <a class="btn" th:href="@{/ui/employees}">← 社員一覧へ戻る</a>
+  </div>
+
+</div>

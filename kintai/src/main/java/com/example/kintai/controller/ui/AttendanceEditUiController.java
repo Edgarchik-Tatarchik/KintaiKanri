@@ -48,7 +48,7 @@ public class AttendanceEditUiController {
             model.addAttribute("form", form);
             model.addAttribute("month", month);
 
-            return "attendance-edit";
+            return "attendance-edit-layout";
         } catch (ResponseStatusException ex) {
         ra.addFlashAttribute("errorMessage", ex.getReason() != null ? ex.getReason() : "勤怠が見つかりません");
         return "redirect:/ui/employees";

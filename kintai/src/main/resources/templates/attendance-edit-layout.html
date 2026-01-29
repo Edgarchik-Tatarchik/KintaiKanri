@@ -4,10 +4,9 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" th:href="@{/css/app.css}">
-  <title th:text="${title} ?: 'Kintai'">Kintai</title>
+  <title>勤怠修正</title>
 </head>
 <body>
-
 <div class="container">
 
   <div class="nav">
@@ -22,14 +21,12 @@
   <div class="card" th:if="${successMessage}">
     <div class="flash flash-ok" th:text="${successMessage}"></div>
   </div>
-
   <div class="card" th:if="${errorMessage}">
     <div class="flash flash-err" th:text="${errorMessage}"></div>
   </div>
 
-  <div th:replace="${content}"></div>
+  <div th:replace="~{attendance-edit :: page}"></div>
 
 </div>
-
 </body>
 </html>

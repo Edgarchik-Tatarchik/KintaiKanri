@@ -29,16 +29,16 @@ public class DashboardUiController {
 
         long totalEmployees = employeeRepository.count();
         long checkedInToday = attendanceRepository.findByWorkDate(today).size();
-        List<Attendance> notCheckedOut = attendanceRepository
-                .findByWorkDateAndCheckInIsNotNullAndCheckOutIsNull(today);
-
+        List<Attendance> notCheckedOut =
+            attendanceRepository.findNotCheckedOutWithEmployee(today);
         model.addAttribute("today", today);
         model.addAttribute("totalEmployees", totalEmployees);
         model.addAttribute("checkedInToday", checkedInToday);
         model.addAttribute("notCheckedOutCount", notCheckedOut.size());
         model.addAttribute("notCheckedOutList", notCheckedOut);
-        notCheckedOut.forEach(a -> a.getEmployee().getName());
+        model.addAttribute("title", "ダッシュボード");
+        model.addAttribute("content", "dashboard :: page");
         
-        return "dashboard";
+        return "dashboard-layout";
     }
 }

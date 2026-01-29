@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <title>社員一覧</title>
+</head>
+<body>
+<div class="container">
+
+  <div class="nav">
+    <div class="brand">勤怠管理システム</div>
+    <div class="links">
+      <a th:href="@{/}">ダッシュボード</a>
+      <a th:href="@{/ui/employees}">社員一覧</a>
+      <a th:href="@{/ui/employees/new}">＋ 新規作成</a>
+    </div>
+  </div>
+
+  <!-- Flash messages -->
+  <div class="card" th:if="${successMessage}">
+    <div class="flash flash-ok" th:text="${successMessage}"></div>
+  </div>
+  <div class="card" th:if="${errorMessage}">
+    <div class="flash flash-err" th:text="${errorMessage}"></div>
+  </div>
+
+  <!-- Page content -->
+  <div th:replace="~{employees-list :: page}"></div>
+
+</div>
+</body>
+</html>

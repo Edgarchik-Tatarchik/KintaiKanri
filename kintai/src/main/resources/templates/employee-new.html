@@ -1,37 +1,54 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>New Employee</title>
-  <style>
-    label { display:block; margin-top:10px; }
-    input { width:300px; padding:6px; }
-    .error { color:red; }
-  </style>
-</head>
-<body>
-<div th:if="${errorMessage}" style="color:red; margin-bottom:10px;"
-     th:text="${errorMessage}"></div>
-<h1>社員作成</h1>
+<div th:fragment="page">
 
-<form th:action="@{/ui/employees}" th:object="${employee}" method="post">
+  <div class="card">
+    <div class="h1">社員登録</div>
+    <div class="muted">新しい社員を登録します（メールは重複不可）</div>
 
-  <label>Name</label>
-  <input type="text" th:field="*{name}" />
-  <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
+    <div class="spacer"></div>
 
-  <label>Email</label>
-  <input type="text" th:field="*{email}" />
-  <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red;"></div>
+    <form th:action="@{/ui/employees}"
+          th:object="${employee}"
+          method="post">
 
-  <label>Department</label>
-  <input type="text" th:field="*{department}" />
-  <div th:if="${#fields.hasErrors('department')}" th:errors="*{department}" style="color:red;"></div>
+      <div class="row" style="align-items:flex-start; gap:18px;">
 
-  <button type="submit">作成</button>
-</form>
+        <div style="flex:1; min-width:260px;">
+          <label>氏名</label>
+          <div class="spacer" style="height:6px;"></div>
+          <input class="input" type="text" th:field="*{name}" placeholder="例）山田 太郎"/>
+          <div class="error-text"
+               th:if="${#fields.hasErrors('name')}"
+               th:errors="*{name}"></div>
+        </div>
 
-<p><a th:href="@{/ui/employees}">← 一覧へ戻る</a></p>
+        <div style="flex:1; min-width:260px;">
+          <label>メール</label>
+          <div class="spacer" style="height:6px;"></div>
+          <input class="input" type="text" th:field="*{email}" placeholder="例）taro@example.com"/>
+          <div class="error-text"
+               th:if="${#fields.hasErrors('email')}"
+               th:errors="*{email}"></div>
+        </div>
 
-</body>
-</html>
+        <div style="flex:1; min-width:260px;">
+          <label>部署</label>
+          <div class="spacer" style="height:6px;"></div>
+          <input class="input" type="text" th:field="*{department}" placeholder="例）HR / IT / Sales"/>
+          <div class="error-text"
+               th:if="${#fields.hasErrors('department')}"
+               th:errors="*{department}"></div>
+        </div>
+
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="row">
+        <button class="btn btn-primary" type="submit">登録</button>
+        <a class="btn" th:href="@{/ui/employees}">キャンセル</a>
+      </div>
+
+    </form>
+  </div>
+
+</div>
