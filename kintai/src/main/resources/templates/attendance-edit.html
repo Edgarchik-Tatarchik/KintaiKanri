@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>勤怠修正</title>
+  <style>
+    label { display:block; margin-top:10px; }
+    input { padding:6px; width: 180px; }
+    .row { margin: 8px 0; }
+    .btn { padding: 8px 12px; }
+  </style>
+</head>
+<body>
+
+<h1>勤怠修正</h1>
+
+<p>
+  <strong>日付:</strong> <span th:text="${attendance.workDate}"></span>
+</p>
+
+<form th:action="@{'/ui/attendance/' + ${attendance.id} + '/edit'}"
+    th:object="${form}"
+    method="post">
+     <input type="hidden" name="month" th:value="${month}" />
+
+  <label>出勤</label>
+  <input type="time" th:field="*{checkIn}" required />
+
+  <label>退勤</label>
+  <input type="time" th:field="*{checkOut}" required />
+
+  <label>休憩(分)</label>
+  <input type="number" th:field="*{breakMinutes}" min="0" required />
+
+  <div class="row">
+    <button class="btn" type="submit">保存</button>
+  </div>
+</form>
+
+<p>
+  <a th:href="@{'/ui/employees/' + ${employeeId}}" th:if="${month == null}">
+  ← 戻る
+</a>
+</p>
+
+</body>
+</html>

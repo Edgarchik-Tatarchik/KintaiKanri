@@ -90,6 +90,7 @@
             <th>退勤</th>
             <th>休憩(分)</th>
             <th>労働時間</th>
+            <th>操作</th>
         </tr>
     </thead>
     <tbody>
@@ -99,6 +100,11 @@
             <td th:text="${a.checkOut}"></td>
             <td th:text="${a.breakMinutes}"></td>
             <td th:text="${a.workedTime}"></td>
+            <td>
+            <a th:href="@{'/ui/attendance/' + ${a.id} + '/edit' + '?month=' + ${selectedMonth}}">
+                編集
+            </a>
+            </td>
         </tr>
     </tbody>
 </table>

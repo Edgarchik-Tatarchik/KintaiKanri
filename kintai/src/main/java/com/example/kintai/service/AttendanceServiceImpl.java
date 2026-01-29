@@ -2,8 +2,8 @@ package com.example.kintai.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.time.YearMonth;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -82,5 +82,31 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         attendance.setBreakMinutes(breakMinutes);
         return attendanceRepository.save(attendance);
+    }
+    @Override
+    public Attendance findById(Long attendanceId) {
+    return attendanceRepository.findById(attendanceId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attendance not found"));
 }
+
+    @Override
+    public Attendance updateAttendance(Long attendanceId, LocalTime checkIn, LocalTime checkOut, int breakMinutes) {
+    Attendance a = findById(attendanceId);
+
+    if (checkIn == null || checkOut == null) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "出勤・退勤を入力してください");
+    }
+    if (checkOut.isBefore(checkIn)) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "退勤は出勤より後である必要があります");
+    }
+    if (breakMinutes < 0) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "休憩(分)は0以上です");
+    }
+
+    a.setCheckIn(checkIn);
+    a.setCheckOut(checkOut);
+    a.setBreakMinutes(breakMinutes);
+
+    return attendanceRepository.save(a);
+    }
 }
