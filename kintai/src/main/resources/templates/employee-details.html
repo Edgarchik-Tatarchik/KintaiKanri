@@ -67,6 +67,7 @@
             <th>出勤</th>
             <th>退勤</th>
             <th>休憩(分)</th>
+            <th>労働時間</th>
         </tr>
     </thead>
     <tbody>
@@ -75,9 +76,11 @@
             <td th:text="${a.checkIn}"></td>
             <td th:text="${a.checkOut}"></td>
             <td th:text="${a.breakMinutes}"></td>
+            <td th:text="${a.workedTime}"></td>
         </tr>
     </tbody>
 </table>
+<p><strong>合計労働時間:</strong> <span th:text="${totalWorkedTime}"></span></p>
 <p style="margin-bottom: 16px;">
   <a th:href="@{/ui/employees}"
      style="display:inline-block; padding:8px 12px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">

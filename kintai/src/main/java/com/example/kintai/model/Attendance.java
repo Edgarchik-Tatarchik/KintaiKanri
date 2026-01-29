@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -62,4 +63,23 @@ public class Attendance {
     public void setCheckIn(LocalTime checkIn) { this.checkIn = checkIn; }
     public void setCheckOut(LocalTime checkOut) { this.checkOut = checkOut; }
     public void setBreakMinutes(int breakMinutes) { this.breakMinutes = breakMinutes; }
+    @Transient
+    public Integer getWorkedMinutes() {
+        if (checkIn == null || checkOut == null) return null;
+
+        int in = checkIn.toSecondOfDay();
+        int out = checkOut.toSecondOfDay();
+
+        int minutes = (out - in) / 60 - breakMinutes;
+        return Math.max(minutes, 0);
+    }
+
+    @Transient
+    public String getWorkedTime() {
+        Integer m = getWorkedMinutes();
+        if (m == null) return "-";
+        int h = m / 60;
+        int mm = m % 60;
+        return String.format("%d:%02d", h, mm);
+    }
 }

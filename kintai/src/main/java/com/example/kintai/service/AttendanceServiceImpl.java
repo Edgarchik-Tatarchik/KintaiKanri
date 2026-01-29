@@ -3,6 +3,7 @@ package com.example.kintai.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.time.YearMonth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -68,11 +69,18 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceRepository.findByEmployee_Id(employeeId);
     }
     @Override
-public Attendance updateBreak(Long employeeId, LocalDate workDate, int breakMinutes) {
-    Attendance attendance = attendanceRepository.findByEmployee_IdAndWorkDate(employeeId, workDate)
+    public List<Attendance> listByEmployeeAndMonth(Long employeeId, YearMonth month) {
+        LocalDate start = month.atDay(1);
+        LocalDate end = month.atEndOfMonth();
+        return attendanceRepository.findByEmployee_IdAndWorkDateBetween(employeeId, start, end);
+    }
+    
+    @Override
+    public Attendance updateBreak(Long employeeId, LocalDate workDate, int breakMinutes) {
+        Attendance attendance = attendanceRepository.findByEmployee_IdAndWorkDate(employeeId, workDate)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attendance not found"));
 
-    attendance.setBreakMinutes(breakMinutes);
-    return attendanceRepository.save(attendance);
+        attendance.setBreakMinutes(breakMinutes);
+        return attendanceRepository.save(attendance);
 }
 }
