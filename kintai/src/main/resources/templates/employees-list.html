@@ -10,8 +10,10 @@
   </style>
 </head>
 <body>
+    
     <p>
   <a th:href="@{/ui/employees/new}">＋ 新規作成</a>
+  <a th:href="@{/}">← ダッシュボード</a>
 </p>
 <div th:if="${errorMessage}" style="color:red; margin-bottom:10px;"
      th:text="${errorMessage}">

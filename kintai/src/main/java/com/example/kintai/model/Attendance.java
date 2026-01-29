@@ -82,4 +82,17 @@ public class Attendance {
         int mm = m % 60;
         return String.format("%d:%02d", h, mm);
     }
+    @Transient
+    public String getStatusLabel() {
+        if (checkIn == null) return "未出勤";
+        if (checkOut == null) return "出勤中";
+        return "退勤済";
+    }
+
+    @Transient
+    public String getStatusClass() {
+        if (checkIn == null) return "status-work"; 
+        if (checkOut == null) return "status-in";  
+        return "status-out";                       
+    }
 }

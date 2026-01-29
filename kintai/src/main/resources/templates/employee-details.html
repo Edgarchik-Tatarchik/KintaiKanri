@@ -97,6 +97,7 @@
             <th>退勤</th>
             <th>休憩(分)</th>
             <th>労働時間</th>
+            <th>状態</th>
             <th>操作</th>
         </tr>
     </thead>
@@ -107,6 +108,7 @@
             <td th:text="${a.checkOut}"></td>
             <td th:text="${a.breakMinutes}"></td>
             <td th:text="${a.workedTime}"></td>
+            <td th:text="${a.statusLabel}" th:class="${a.statusClass}"></td>
             <td>
             <a th:href="@{'/ui/attendance/' + ${a.id} + '/edit' + '?month=' + ${selectedMonth}}">
                 編集
@@ -127,6 +129,9 @@
 </p>
 </body>
 <style>
+    .status-work { color: #d32f2f; font-weight: bold; } /* 未出勤 */
+    .status-in   { color: #f9a825; font-weight: bold; } /* 出勤中 */
+    .status-out  { color: #388e3c; font-weight: bold; } /* 退勤済 */
   .msg { padding: 10px; margin: 10px 0; border-radius: 6px; }
   .success { background: #e7f7ea; border: 1px solid #b7e3c0; }
   .error { background: #fde8e8; border: 1px solid #f5b5b5; }
