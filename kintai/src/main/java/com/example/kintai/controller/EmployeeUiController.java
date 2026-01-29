@@ -1,10 +1,14 @@
 package com.example.kintai.controller;
 
 
+import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,7 +59,7 @@ public class EmployeeUiController {
             try {
                 ym = (month == null || month.isBlank())
                         ? YearMonth.now()
-                        : YearMonth.parse(month); // ожидает "2026-01"
+                        : YearMonth.parse(month); 
             } catch (DateTimeParseException ex) {
                 ym = YearMonth.now();
                 ra.addFlashAttribute("errorMessage", "月の形式が正しくありません（例: 2026-01）");
@@ -92,9 +96,57 @@ public class EmployeeUiController {
         return String.format("%d:%02d", h, m);
     }
     @GetMapping("/new")
-public String newEmployeeForm(Model model) {
-    model.addAttribute("employee", new EmployeeForm());
-    return "employee-new";
+    public String newEmployeeForm(Model model) {
+        model.addAttribute("employee", new EmployeeForm());
+        return "employee-new";
+    }
+    @GetMapping("/{id:\\d+}/csv")
+    public ResponseEntity<byte[]> exportMonthlyCsv(@PathVariable Long id,
+                                               @RequestParam String month) {
+
+        Employee employee = employeeService.findById(id)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        YearMonth ym;
+        try {
+            ym = YearMonth.parse(month); // "YYYY-MM"
+        } catch (DateTimeParseException ex) {
+            ym = YearMonth.now();
+        }
+
+    List<Attendance> attendances = attendanceService.listByEmployeeAndMonth(id, ym);
+
+    StringBuilder sb = new StringBuilder();
+    
+    sb.append("社員ID,氏名,日付,出勤,退勤,休憩(分),労働時間(分),労働時間(h:mm)\n");
+
+    for (Attendance a : attendances) {
+        sb.append(escapeCsv(String.valueOf(employee.getId()))).append(",");
+        sb.append(escapeCsv(employee.getName())).append(",");
+        sb.append(escapeCsv(String.valueOf(a.getWorkDate()))).append(",");
+        sb.append(escapeCsv(a.getCheckIn() == null ? "" : a.getCheckIn().toString())).append(",");
+        sb.append(escapeCsv(a.getCheckOut() == null ? "" : a.getCheckOut().toString())).append(",");
+        sb.append(a.getBreakMinutes()).append(",");
+
+        Integer workedMin = a.getWorkedMinutes();
+        sb.append(workedMin == null ? "" : workedMin).append(",");
+        sb.append(escapeCsv(a.getWorkedTime())).append("\n");
+    }
+
+    
+        byte[] bom = new byte[] {(byte)0xEF, (byte)0xBB, (byte)0xBF};
+        byte[] body = sb.toString().getBytes(StandardCharsets.UTF_8);
+
+        byte[] out = new byte[bom.length + body.length];
+        System.arraycopy(bom, 0, out, 0, bom.length);
+        System.arraycopy(body, 0, out, bom.length, body.length);
+
+        String filename = "kintai_" + employee.getId() + "_" + ym + ".csv";
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))
+            .body(out);
 }
 
     @PostMapping
@@ -114,5 +166,11 @@ public String newEmployeeForm(Model model) {
 
     ra.addFlashAttribute("successMessage", "社員を作成しました");
     return "redirect:/ui/employees/" + saved.getId();
-}
+    }
+    private String escapeCsv(String s) {
+    if (s == null) return "";
+    boolean needQuote = s.contains(",") || s.contains("\n") || s.contains("\r") || s.contains("\"");
+    String escaped = s.replace("\"", "\"\"");
+    return needQuote ? "\"" + escaped + "\"" : escaped;
+    }
 }
