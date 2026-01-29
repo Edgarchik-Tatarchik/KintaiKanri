@@ -1,6 +1,8 @@
 package com.example.kintai.controller;
 
 
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.kintai.dto.EmployeeForm;
@@ -43,23 +46,38 @@ public class EmployeeUiController {
 
     
     @GetMapping("/{id:\\d+}")
-    public String details(@PathVariable Long id, Model model, RedirectAttributes ra) {
+    public String details(@PathVariable Long id, @RequestParam(required = false) String month, Model model, RedirectAttributes ra) {
         
     return employeeService.findById(id)
-        .map(employee -> {
-            List<Attendance> attendances =
-                        attendanceService.listByEmployee(id);
+         .map(employee -> {
 
-                
-                int totalMinutes = attendances.stream()
-                        .map(Attendance::getWorkedMinutes)
-                        .filter(m -> m != null)
-                        .mapToInt(Integer::intValue)
-                        .sum();
+            YearMonth ym;
+            try {
+                ym = (month == null || month.isBlank())
+                        ? YearMonth.now()
+                        : YearMonth.parse(month); // ожидает "2026-01"
+            } catch (DateTimeParseException ex) {
+                ym = YearMonth.now();
+                ra.addFlashAttribute("errorMessage", "月の形式が正しくありません（例: 2026-01）");
+            }
+
+            List<Attendance> attendances = attendanceService.listByEmployeeAndMonth(id, ym);
+
+            int totalMinutes = attendances.stream()
+                    .map(Attendance::getWorkedMinutes)
+                    .filter(m -> m != null)
+                    .mapToInt(Integer::intValue)
+                    .sum();
+
             model.addAttribute("employee", employee);
             model.addAttribute("attendances", attendances);
             model.addAttribute("today", java.time.LocalDate.now());
+
+            model.addAttribute("selectedMonth", ym.toString()); 
+            model.addAttribute("prevMonth", ym.minusMonths(1).toString()); 
+            model.addAttribute("nextMonth", ym.plusMonths(1).toString());  
             model.addAttribute("totalWorkedTime", formatMinutes(totalMinutes));
+
             return "employee-details";
         })
         .orElseGet(() -> {

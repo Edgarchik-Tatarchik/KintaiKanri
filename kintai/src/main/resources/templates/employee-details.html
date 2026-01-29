@@ -31,6 +31,7 @@
 
   <label>出勤: </label>
   <input type="time" name="time" required />
+  <input type="hidden" name="month" th:value="${selectedMonth}" />
 
   <button type="submit">出勤</button>
 </form>
@@ -43,6 +44,7 @@
 
   <label>退勤: </label>
   <input type="time" name="time" required />
+  <input type="hidden" name="month" th:value="${selectedMonth}" />
 
   <button type="submit">退勤</button>
 </form>
@@ -54,10 +56,30 @@
 
   <label>休憩(分): </label>
   <input type="number" name="breakMinutes" min="0" value="60" required />
+  <input type="hidden" name="month" th:value="${selectedMonth}" />
 
   <button type="submit">休憩更新</button>
 </form>
 
+<h2>月次勤怠</h2>
+<form th:action="@{'/ui/employees/' + ${employee.id}}" method="get" style="margin-bottom: 12px;">
+  <label>対象月: </label>
+  <input type="month" name="month" th:value="${selectedMonth}" required />
+  <button type="submit">表示</button>
+</form>
+<div style="margin-bottom:12px; display:flex; gap:8px; align-items:center;">
+  <a th:href="@{'/ui/employees/' + ${employee.id} + '?month=' + ${prevMonth}}"
+     style="padding:6px 10px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
+    ◀ 前月
+  </a>
+
+  <strong th:text="${selectedMonth}"></strong>
+
+  <a th:href="@{'/ui/employees/' + ${employee.id} + '?month=' + ${nextMonth}}"
+     style="padding:6px 10px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">
+    次月 ▶
+  </a>
+</div>
 <h2>勤怠一覧</h2>
 
 <table>
@@ -80,7 +102,10 @@
         </tr>
     </tbody>
 </table>
-<p><strong>合計労働時間:</strong> <span th:text="${totalWorkedTime}"></span></p>
+<p>
+  <strong>月合計労働時間:</strong>
+  <span th:text="${totalWorkedTime}"></span>
+</p>
 <p style="margin-bottom: 16px;">
   <a th:href="@{/ui/employees}"
      style="display:inline-block; padding:8px 12px; border:1px solid #ccc; text-decoration:none; border-radius:6px;">

@@ -27,6 +27,7 @@ public class AttendanceUiController {
     public String checkIn(@RequestParam Long employeeId,
                           @RequestParam String workDate,
                           @RequestParam String time,
+                          @RequestParam(required = false) String month,
                           RedirectAttributes ra) {
         try {
             LocalDate date = LocalDate.parse(workDate);   // expects yyyy-MM-dd
@@ -47,6 +48,7 @@ public class AttendanceUiController {
     public String checkOut(@RequestParam Long employeeId,
                            @RequestParam String workDate,
                            @RequestParam String time,
+                           @RequestParam(required = false) String month,
                            RedirectAttributes ra) {
         try {
             LocalDate date = LocalDate.parse(workDate);
@@ -67,6 +69,7 @@ public class AttendanceUiController {
     public String updateBreak(@RequestParam Long employeeId,
                               @RequestParam String workDate,
                               @RequestParam String breakMinutes,
+                              @RequestParam(required = false) String month,
                               RedirectAttributes ra) {
         try {
             LocalDate date = LocalDate.parse(workDate);
@@ -86,6 +89,9 @@ public class AttendanceUiController {
             ra.addFlashAttribute("errorMessage", ex.getReason());
         } catch (Exception ex) {
             ra.addFlashAttribute("errorMessage", "エラーが発生しました");
+        }
+        if (month != null && !month.isBlank()) {
+            return "redirect:/ui/employees/" + employeeId + "?month=" + month;
         }
         return "redirect:/ui/employees/" + employeeId;
     }
