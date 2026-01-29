@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 import com.example.kintai.model.Attendance;
 
@@ -17,4 +18,5 @@ public interface AttendanceService {
     Attendance findById(Long attendanceId);
     List<Attendance> listByEmployeeAndMonth(Long employeeId, YearMonth month);
     List<Attendance> listByEmployee(Long employeeId);
+    Optional<Attendance> findTodayByEmployee(Long employeeId, LocalDate date);
 }

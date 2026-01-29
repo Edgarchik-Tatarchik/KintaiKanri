@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -108,5 +109,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     a.setBreakMinutes(breakMinutes);
 
     return attendanceRepository.save(a);
+    }
+    @Override
+    public Optional<Attendance> findTodayByEmployee(Long employeeId, LocalDate date) {
+    return attendanceRepository.findByEmployee_IdAndWorkDate(employeeId, date);
     }
 }

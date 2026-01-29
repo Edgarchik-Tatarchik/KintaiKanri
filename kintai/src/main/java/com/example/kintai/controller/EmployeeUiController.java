@@ -4,7 +4,9 @@ package com.example.kintai.controller;
 import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -44,7 +46,26 @@ public class EmployeeUiController {
     
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("employees", employeeService.findAll());
+        var employees = employeeService.findAll();
+        var today = java.time.LocalDate.now();
+
+            Map<Long, String> statusLabelMap = new HashMap<>();
+            Map<Long, String> statusClassMap = new HashMap<>();
+
+    for (Employee e : employees) {
+        attendanceService.findTodayByEmployee(e.getId(), today)
+            .ifPresentOrElse(a -> {
+                statusLabelMap.put(e.getId(), a.getStatusLabel());
+                statusClassMap.put(e.getId(), a.getStatusClass());
+            }, () -> {
+                statusLabelMap.put(e.getId(), "未出勤");
+                statusClassMap.put(e.getId(), "status-work");
+            });
+    }
+
+        model.addAttribute("employees", employees);
+        model.addAttribute("todayStatusLabel", statusLabelMap);
+        model.addAttribute("todayStatusClass", statusClassMap);
         return "employees-list";
     }
 

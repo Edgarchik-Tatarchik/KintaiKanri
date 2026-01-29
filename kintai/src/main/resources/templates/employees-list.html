@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <title>Employees</title>
   <style>
+    .status-work { color:#d32f2f; font-weight:bold; } /* 未出勤 */
+    .status-in   { color:#f9a825; font-weight:bold; } /* 出勤中 */
+    .status-out  { color:#388e3c; font-weight:bold; } /* 退勤済 */
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #ccc; padding: 8px; }
     th { background: #f2f2f2; }
@@ -15,6 +18,23 @@
   <a th:href="@{/ui/employees/new}" style="margin-right:16px;">＋ 新規作成</a>
 
   <a th:href="@{/}">← ダッシュボード</a>
+
+  <form method="get" th:action="@{/ui/employees}"
+      style="margin-bottom:12px; display:flex; gap:8px;">
+
+  <input type="text"
+         name="keyword"
+         placeholder="社員名で検索"
+         th:value="${keyword}"
+         style="padding:6px; width:200px;" />
+
+  <button type="submit">検索</button>
+
+  <a th:if="${keyword != null}"
+     th:href="@{/ui/employees}"
+     style="align-self:center;">クリア</a>
+</form>
+
 </p>
 <div th:if="${errorMessage}" style="color:red; margin-bottom:10px;"
      th:text="${errorMessage}">
@@ -28,6 +48,7 @@
       <th>Name</th>
       <th>Email</th>
       <th>Department</th>
+      <th>今日の状態</th>
     </tr>
   </thead>
   <tbody>
@@ -36,6 +57,9 @@
       <td><a th:href="@{'/ui/employees/' + ${e.id}}" th:text="${e.name}"></a></td>
       <td th:text="${e.email}"></td>
       <td th:text="${e.department}"></td>
+      <td th:text="${todayStatusLabel[e.id]}"
+        th:class="${todayStatusClass[e.id]}">
+      </td>
     </tr>
   </tbody>
 </table>
