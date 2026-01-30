@@ -56,6 +56,14 @@
   <img src="docs/images/Dashboard.png" alt="ダッシュボード" width="800">
 </p>
 
+<h2>デモ</h2>
+<p align="center">
+  <img src="docs/images/demo1.gif" width="800" alt="デモ">
+</p>
+<p align="center">
+  <img src="docs/images/demo2.gif" width="800" alt="デモ">
+</p>
+
 ---
 
 ## 工夫した点
