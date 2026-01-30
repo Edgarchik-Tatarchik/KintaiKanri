@@ -30,8 +30,8 @@ public class AttendanceUiController {
                           @RequestParam(required = false) String month,
                           RedirectAttributes ra) {
         try {
-            LocalDate date = LocalDate.parse(workDate);   // expects yyyy-MM-dd
-            LocalTime t = LocalTime.parse(time);          // expects HH:mm
+            LocalDate date = LocalDate.parse(workDate);   
+            LocalTime t = LocalTime.parse(time);          
             attendanceService.checkIn(employeeId, date, t);
             ra.addFlashAttribute("successMessage", "出勤登録しました");
         } catch (DateTimeParseException ex) {
