@@ -93,7 +93,7 @@
 ### 1) PostgreSQL（Docker）
 ```bash
 docker compose up -d
-docker cimpose ps
+docker compose ps
 ```
 ### 2) アプリ起動（PostgreSQL profile）
 
